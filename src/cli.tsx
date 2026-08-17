@@ -2,9 +2,16 @@
 
 import { render } from '@termuijs/jsx';
 import { realpathSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { HushApp } from './app.js';
 import { initializeHushHome } from './hush-home.js';
+
+async function readPackageVersion(): Promise<string> {
+  const raw = await readFile(new URL('../package.json', import.meta.url), 'utf8');
+  const pkg = JSON.parse(raw) as { version?: string };
+  return pkg.version ?? 'dev';
+}
 
 const HELP = `Usage: hush
 
@@ -35,7 +42,8 @@ export async function runCli(args = process.argv.slice(2)): Promise<number> {
   }
 
   await initializeHushHome();
-  return render(<HushApp />, { title: 'Hush', fullscreen: true, exitKey: 'q' });
+  const version = await readPackageVersion();
+  return render(<HushApp version={version} />, { title: 'Hush', fullscreen: true, exitKey: 'q' });
 }
 
 function isMainModule(): boolean {

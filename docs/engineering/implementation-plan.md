@@ -129,15 +129,15 @@ The first no-secret slice is implemented with a packaged executable, TermUI appl
 Observed on macOS 26.3.1, Apple silicon, Node.js 24.4.0, and npm 11.13.0:
 
 - TypeScript static analysis and compilation completed successfully.
-- Eight focused tests passed across production layout, application navigation, compact ASCII output, private local-state creation, symbolic-link rejection, option validation, and the platform boundary.
+- Nine focused tests passed across production layout, application navigation, theme selection, compact ASCII output, private local-state creation, symbolic-link rejection, option validation, and the platform boundary.
 - A packed tarball installed into an isolated directory and its `hush --help` executable returned successfully.
 - npm reported no known vulnerabilities in the installed dependency graph.
+- `scripts/verify-terminal-restoration.sh` mounted the application under a real pty (macOS `script`, no added dependency) and confirmed terminal restoration (exit alt screen, show cursor, SGR reset) with the expected process exit code for SIGINT (130), SIGTERM (143), an uncaught exception (1), an unhandled rejection (1), and the `q` exit key (0). All five scenarios passed.
 
 Not yet verified:
 
 - `@termuijs/dev-server` 0.1.7 was rejected after source inspection and a runtime check showed that it pipes child stdin without forwarding terminal input. `tsx watch` also consumes stdin as its restart trigger. The supported interactive development command is `tsx src/cli.tsx`, with manual restarts after changes.
-- Interactive terminal rendering and restoration in Terminal.app, iTerm2, and the VS Code integrated terminal.
-- Process-level restoration after cancellation, signals, uncaught failures, and rejected promises.
+- Interactive terminal rendering and restoration observed directly in Terminal.app, iTerm2, and the VS Code integrated terminal (the process-level harness above exercises the same restoration path headlessly under a pty, not those specific terminal emulators).
 - Intel macOS behavior.
 
 Phase 1 remains in progress until the applicable terminal and process checks are observed. Phase 2 remains blocked on cryptographic review and protected-storage and SQLite evidence.

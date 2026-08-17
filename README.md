@@ -4,7 +4,7 @@ Hush is a local-first terminal application for managing project secrets and envi
 
 ## Status
 
-Hush is under active development. Version 0.1.0 contains an initial runnable application shell, but it does not store or manage secrets yet.
+Hush is under active development. Version 0.2.0 adds the themed application shell and terminal-restoration checks, but it does not store or manage secrets yet.
 
 ## Installation
 

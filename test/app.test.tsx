@@ -18,7 +18,9 @@ describe('Hush application shell', () => {
     const screen = new Screen(80, 24);
     root.render(screen);
 
-    expect(renderFallback(screen)).toContain('HUSH');
+    const output = renderFallback(screen);
+    expect(output).toContain('local vault');
+    expect(output).toContain('Navigation');
   });
 
   it('navigates with visible keyboard actions', () => {
@@ -31,6 +33,23 @@ describe('Hush application shell', () => {
 
     expect(screen.getByText('Preferences')).not.toBeNull();
     expect(screen.getByText('Active: Settings')).not.toBeNull();
+    screen.unmount();
+  });
+
+  it('cycles the color theme with the t key', () => {
+    const screen = render(<HushApp columns={100} />);
+    screen.fireKey('2');
+
+    expect(screen.getByText('Theme: Tokyo Night')).not.toBeNull();
+    screen.fireKey('t');
+    expect(screen.getByText('Theme: Dracula')).not.toBeNull();
+    screen.fireKey('t');
+    expect(screen.getByText('Theme: Catppuccin')).not.toBeNull();
+    screen.fireKey('t');
+    expect(screen.getByText('Theme: Nord')).not.toBeNull();
+    screen.fireKey('t');
+    expect(screen.getByText('Theme: Tokyo Night')).not.toBeNull();
+
     screen.unmount();
   });
 
