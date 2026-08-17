@@ -20,19 +20,19 @@ describe('Hush application shell', () => {
 
     const output = renderFallback(screen);
     expect(output).toContain('local vault');
-    expect(output).toContain('Navigation');
+    expect(output).toContain('Hush › Overview');
   });
 
   it('navigates with visible keyboard actions', () => {
     const screen = render(<HushApp columns={100} />);
 
     expect(screen.getByText('Local vault')).not.toBeNull();
-    expect(screen.getByText('Navigation')).not.toBeNull();
+    expect(screen.getByText('Hush › Overview')).not.toBeNull();
 
     screen.fireKey('2');
 
     expect(screen.getByText('Preferences')).not.toBeNull();
-    expect(screen.getByText('Active: Settings')).not.toBeNull();
+    expect(screen.getByText('Hush › Settings')).not.toBeNull();
     screen.unmount();
   });
 
@@ -64,8 +64,9 @@ describe('Hush application shell', () => {
     const output = screen.renderToString();
 
     expect(output).toContain('# HUSH');
-    expect(output).toContain('1 Overview | 2 Settings | Active: Overview');
-    expect(output).toContain('no color | no motion | ASCII');
+    expect(output).toContain('Hush › Overview');
+    expect(output).toContain('1 Overview  2 Settings  t Theme  q Quit');
+    expect(output).toContain('no color · no motion · ASCII');
     expect(output).not.toContain('◆');
     screen.unmount();
   });

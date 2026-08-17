@@ -128,11 +128,16 @@ export function HushShell({ columns, capabilities, version = 'dev' }: HushShellP
 
   const screen = activePath === '/' ? <OverviewScreen /> : <SettingsScreen />;
   const activeLabel = activePath === '/' ? 'Overview' : 'Settings';
+  const { themeName } = activePalette();
   const capabilityLabel = [
+    THEME_LABELS[themeName],
     currentCapabilities.color ? 'color' : 'no color',
     currentCapabilities.motion ? 'motion' : 'no motion',
     currentCapabilities.unicode ? 'Unicode' : 'ASCII',
-  ].join(' | ');
+  ].join(' · ');
+  const commandLabel = compact
+    ? '1 Overview  2 Settings  t Theme  q Quit'
+    : '1 Overview  2 Settings  t Theme  ←/→ Navigate  q Quit';
 
   return (
     <box
@@ -146,15 +151,15 @@ export function HushShell({ columns, capabilities, version = 'dev' }: HushShellP
       {showBanner
         ? [
             <Banner text="HUSH" color={palette.primary} />,
-            <text color={palette.muted}>v{version}  ·  local vault  ·  press t for theme</text>,
+            <text color={palette.muted}>v{version}  ·  local vault</text>,
           ]
         : (
           <text color={palette.primary} bold>{mark} HUSH  local-first secret management</text>
         )}
-      <text color={palette.secondary}>{compact ? `1 Overview | 2 Settings | Active: ${activeLabel}` : `Navigation  1 Overview  2 Settings  Active: ${activeLabel}`}</text>
+      <text color={palette.secondary}>Hush › {activeLabel}</text>
       <divider char={divider} color={palette.border} />
       {screen}
-      <text dim>1 overview | 2 settings | t theme | arrows navigate | q quit</text>
+      <text dim>{commandLabel}</text>
       <text dim>{capabilityLabel}</text>
     </box>
   );
