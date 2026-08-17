@@ -67,6 +67,14 @@ describe('vault envelope', () => {
     );
   });
 
+  it('rejects truncated auth tag (prevents tag-shortening bypass)', () => {
+    const envelope = encryptSecret(PLAINTEXT, KEY);
+    const truncated = envelope.tag.subarray(0, 4);
+    expect(() => decryptSecret({ ...envelope, tag: truncated }, KEY)).toThrow(
+      EnvelopeAuthenticationError,
+    );
+  });
+
   it('throws EnvelopeAuthenticationError when decrypting with the wrong key', () => {
     const envelope = encryptSecret(PLAINTEXT, KEY);
     const wrongKey = Buffer.alloc(32, 0xaa);

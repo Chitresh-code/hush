@@ -27,7 +27,7 @@ export function encryptSecret(
   key: Buffer,
   nonce: Buffer = randomBytes(NONCE_LENGTH),
 ): EncryptedEnvelope {
-  const cipher = createCipheriv(ALGORITHM, key, nonce);
+  const cipher = createCipheriv(ALGORITHM, key, nonce, { authTagLength: 16 });
   const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
   const tag = cipher.getAuthTag();
   return { envelopeVersion: CURRENT_ENVELOPE_VERSION, nonce, ciphertext, tag };
@@ -35,9 +35,9 @@ export function encryptSecret(
 
 export function decryptSecret(envelope: EncryptedEnvelope, key: Buffer): Buffer {
   assertSupportedEnvelopeVersion(envelope.envelopeVersion);
-  const decipher = createDecipheriv(ALGORITHM, key, envelope.nonce);
-  decipher.setAuthTag(envelope.tag);
   try {
+    const decipher = createDecipheriv(ALGORITHM, key, envelope.nonce, { authTagLength: 16 });
+    decipher.setAuthTag(envelope.tag);
     return Buffer.concat([decipher.update(envelope.ciphertext), decipher.final()]);
   } catch {
     throw new EnvelopeAuthenticationError(
