@@ -65,7 +65,7 @@ describe('Hush application shell', () => {
 
     expect(output).toContain('# HUSH');
     expect(output).toContain('Hush › Overview');
-    expect(output).toContain('1 Overview  2 Settings  t Theme  q Quit');
+    expect(output).toContain('1 Overview  2 Settings  3 Vault  q Quit');
     expect(output).toContain('no color · no motion · ASCII');
     expect(output).not.toContain('◆');
     screen.unmount();

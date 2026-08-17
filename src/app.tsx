@@ -1,66 +1,30 @@
 import { caps, parseColor } from '@termuijs/core';
 import {
+  getCurrentApp,
   useKeymap,
   useMotion,
   useTerminalSize,
   type FC,
 } from '@termuijs/jsx';
-import { Router } from '@termuijs/router';
-import { createStore } from '@termuijs/store';
-import { NAMED_THEMES, tokyoNightTheme } from '@termuijs/tss';
 import { BigText } from '@termuijs/widgets';
+import { getVaultSummary, isVaultTyping, VaultScreen } from './vault-screens.js';
+import {
+  activePalette,
+  cycleTheme,
+  navigate,
+  resetUiState,
+  THEME_LABELS,
+  useUiState,
+  type AppPath,
+} from './ui-state.js';
 
-export type AppPath = '/' | '/settings';
+export type { AppPath };
+export { resetUiState };
 
 export interface TerminalCapabilities {
   color: boolean;
   motion: boolean;
   unicode: boolean;
-}
-
-const THEME_NAMES = ['tokyoNight', 'dracula', 'catppuccin', 'nord'] as const;
-type ThemeName = (typeof THEME_NAMES)[number];
-
-const THEME_LABELS: Record<ThemeName, string> = {
-  tokyoNight: 'Tokyo Night',
-  dracula: 'Dracula',
-  catppuccin: 'Catppuccin',
-  nord: 'Nord',
-};
-
-interface UiState {
-  activePath: AppPath;
-  themeIndex: number;
-}
-
-const useUiState = createStore<UiState>({ activePath: '/', themeIndex: 0 });
-const router = new Router({ initialPath: '/' });
-
-router.addRoutes([
-  { path: '/', component: OverviewScreen },
-  { path: '/settings', component: SettingsScreen },
-]);
-
-export function resetUiState(): void {
-  router.replace('/');
-  useUiState.setState({ activePath: '/', themeIndex: 0 });
-}
-
-function navigate(path: AppPath): void {
-  router.push(path);
-  useUiState.setState({ activePath: path });
-}
-
-function cycleTheme(): void {
-  useUiState.setState((state) => ({
-    themeIndex: (state.themeIndex + 1) % THEME_NAMES.length,
-  }));
-}
-
-function activePalette() {
-  const themeIndex = useUiState((state) => state.themeIndex);
-  const themeName = THEME_NAMES[themeIndex] ?? THEME_NAMES[0];
-  return { palette: NAMED_THEMES[themeName] ?? tokyoNightTheme, themeName };
 }
 
 const BIG_TEXT_CHAR_WIDTH = 4; // BigText draws 3-column glyphs plus a 1-column gap
@@ -75,11 +39,37 @@ const Banner: FC<{ text: string; color: string }> = ({ text, color }) =>
 
 function OverviewScreen() {
   const { palette } = activePalette();
+  const summary = getVaultSummary();
+
+  if (!summary || summary.environments.length === 0) {
+    return (
+      <box border="single" borderColor={palette.border} padding={1} flexGrow={1} flexDirection="column" gap={1}>
+        <text color={palette.primary} bold>Local vault</text>
+        <text>Everything you add is encrypted on this device. Nothing leaves it.</text>
+        <text dim>No environments yet. Press 3, then n, to create your first one.</text>
+      </box>
+    );
+  }
+
   return (
-    <box border="single" borderColor={palette.border} padding={1} flexGrow={1}>
+    <box border="single" borderColor={palette.border} padding={1} flexGrow={1} flexDirection="column" gap={1}>
       <text color={palette.primary} bold>Local vault</text>
-      <text>This is where your secrets will live, encrypted on this device.</text>
-      <text dim>Nothing is stored yet.</text>
+      <row gap={1}>
+        <text color={palette.secondary}>Environments</text>
+        <text bold>{summary.environments.length}</text>
+      </row>
+      <row gap={1}>
+        <text color={palette.secondary}>Secrets stored</text>
+        <text bold>{summary.totalSecrets}</text>
+      </row>
+      {summary.currentEnvironmentId ? (
+        <row gap={1}>
+          <text color={palette.secondary}>Open environment</text>
+          <text color={palette.success} bold>{summary.currentEnvironmentId}</text>
+        </row>
+      ) : null}
+      <text dim>{summary.environments.join(', ')}</text>
+      <text dim>Press 3 to open the vault.</text>
     </box>
   );
 }
@@ -94,6 +84,14 @@ function SettingsScreen() {
       <text dim>Platform: macOS</text>
     </box>
   );
+}
+
+const SCREEN_ORDER: AppPath[] = ['/', '/settings', '/vault'];
+
+function adjacentScreen(current: AppPath, delta: 1 | -1): AppPath {
+  const index = SCREEN_ORDER.indexOf(current);
+  const nextIndex = (index + delta + SCREEN_ORDER.length) % SCREEN_ORDER.length;
+  return SCREEN_ORDER[nextIndex] ?? '/';
 }
 
 interface HushShellProps {
@@ -118,16 +116,32 @@ export function HushShell({ columns, capabilities, version = 'dev' }: HushShellP
   const divider = currentCapabilities.unicode ? '─' : '-';
   const showBanner = currentCapabilities.unicode && !compact;
 
+  // Vault text-entry fields must accept any character, including the
+  // letters these shortcuts use ('t', 'q') and digits, so every shell-level
+  // shortcut is a no-op while a vault screen is capturing free text. Ctrl+C
+  // still force-quits unconditionally; that's a framework-level control
+  // chord, not something a user types as part of a secret.
   useKeymap([
-    { key: '1', action: () => navigate('/'), description: 'Overview' },
-    { key: '2', action: () => navigate('/settings'), description: 'Settings' },
-    { key: 'left', action: () => navigate('/'), description: 'Previous screen' },
-    { key: 'right', action: () => navigate('/settings'), description: 'Next screen' },
-    { key: 't', action: cycleTheme, description: 'Theme' },
+    { key: '1', action: () => !isVaultTyping() && navigate('/'), description: 'Overview' },
+    { key: '2', action: () => !isVaultTyping() && navigate('/settings'), description: 'Settings' },
+    { key: '3', action: () => !isVaultTyping() && navigate('/vault'), description: 'Vault' },
+    {
+      key: 'left',
+      action: () => !isVaultTyping() && navigate(adjacentScreen(useUiState.getState().activePath, -1)),
+      description: 'Previous screen',
+    },
+    {
+      key: 'right',
+      action: () => !isVaultTyping() && navigate(adjacentScreen(useUiState.getState().activePath, 1)),
+      description: 'Next screen',
+    },
+    { key: 't', action: () => !isVaultTyping() && cycleTheme(), description: 'Theme' },
+    { key: 'q', action: () => !isVaultTyping() && getCurrentApp()?.exit(), description: 'Quit' },
   ]);
 
-  const screen = activePath === '/' ? <OverviewScreen /> : <SettingsScreen />;
-  const activeLabel = activePath === '/' ? 'Overview' : 'Settings';
+  const screen =
+    activePath === '/' ? <OverviewScreen /> : activePath === '/settings' ? <SettingsScreen /> : <VaultScreen />;
+  const activeLabel = activePath === '/' ? 'Overview' : activePath === '/settings' ? 'Settings' : 'Vault';
   const { themeName } = activePalette();
   const capabilityLabel = [
     THEME_LABELS[themeName],
@@ -136,8 +150,8 @@ export function HushShell({ columns, capabilities, version = 'dev' }: HushShellP
     currentCapabilities.unicode ? 'Unicode' : 'ASCII',
   ].join(' · ');
   const commandLabel = compact
-    ? '1 Overview  2 Settings  t Theme  q Quit'
-    : '1 Overview  2 Settings  t Theme  ←/→ Navigate  q Quit';
+    ? '1 Overview  2 Settings  3 Vault  q Quit'
+    : '1 Overview  2 Settings  3 Vault  t Theme  ←/→ Navigate  q Quit';
 
   return (
     <box

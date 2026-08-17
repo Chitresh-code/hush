@@ -2,7 +2,7 @@ import { lstat, mkdtemp, mkdir, readFile, stat, symlink } from 'node:fs/promises
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { initializeHushHome, resolveHushHome } from '../src/hush-home.js';
+import { initializeHushHome, readUiState, resolveHushHome, writeLastEnvironmentId } from '../src/hush-home.js';
 
 const createdHomes: string[] = [];
 
@@ -38,5 +38,22 @@ describe('Hush home', () => {
     await symlink(target, join(userHome, '.hush'));
 
     await expect(initializeHushHome(userHome)).rejects.toThrow('not a regular directory');
+  });
+
+  it('persists the last-used environment id without disturbing other ui-state fields', async () => {
+    const userHome = await temporaryHome();
+    const paths = await initializeHushHome(userHome);
+
+    await writeLastEnvironmentId(paths, 'acme/production');
+
+    expect(await readUiState(paths)).toEqual({
+      version: 1,
+      activeScreen: 'overview',
+      lastEnvironmentId: 'acme/production',
+    });
+    expect((await stat(paths.uiState)).mode & 0o777).toBe(0o600);
+
+    await writeLastEnvironmentId(paths, 'acme/staging');
+    expect((await readUiState(paths)).lastEnvironmentId).toBe('acme/staging');
   });
 });

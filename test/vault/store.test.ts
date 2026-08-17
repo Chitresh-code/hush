@@ -7,7 +7,11 @@ import { InterruptedMigrationError, VaultCorruptionError } from '../../src/vault
 import {
   insertSecret,
   latestSecret,
+  listEnvironmentIds,
+  listSecretNames,
   openVaultDatabase,
+  secretVersion,
+  secretVersions,
   vaultFileExists,
 } from '../../src/vault/store.js';
 
@@ -140,6 +144,41 @@ describe('vault store', () => {
     const path = await tempDbPath();
     symlinkSync(join(path, '..', 'nonexistent-target.db'), path);
     expect(vaultFileExists(path)).toBe(true);
+  });
+
+  it('lists distinct secret names for an environment, alphabetically', async () => {
+    const path = await tempDbPath();
+    const db = openVaultDatabase(path);
+    insertSecret(db, sampleRow({ name: 'DB_PASSWORD', version: 1 }));
+    insertSecret(db, sampleRow({ name: 'API_KEY', version: 1 }));
+    insertSecret(db, sampleRow({ name: 'API_KEY', version: 2 }));
+    insertSecret(db, sampleRow({ environmentId: 'other-env', name: 'ZZZ', version: 1 }));
+
+    expect(listSecretNames(db, 'env-1')).toEqual(['API_KEY', 'DB_PASSWORD']);
+    db.close();
+  });
+
+  it('lists all versions of a secret newest first, and fetches one by number', async () => {
+    const path = await tempDbPath();
+    const db = openVaultDatabase(path);
+    insertSecret(db, sampleRow({ version: 1, ciphertext: Buffer.from('v1') }));
+    insertSecret(db, sampleRow({ version: 2, ciphertext: Buffer.from('v2') }));
+
+    expect(secretVersions(db, 'env-1', 'API_KEY').map((row) => row.version)).toEqual([2, 1]);
+    expect(secretVersion(db, 'env-1', 'API_KEY', 1)?.ciphertext.toString()).toBe('v1');
+    expect(secretVersion(db, 'env-1', 'API_KEY', 99)).toBeUndefined();
+    db.close();
+  });
+
+  it('lists distinct environment ids across all secrets', async () => {
+    const path = await tempDbPath();
+    const db = openVaultDatabase(path);
+    insertSecret(db, sampleRow({ environmentId: 'staging', version: 1 }));
+    insertSecret(db, sampleRow({ environmentId: 'prod', version: 1 }));
+    insertSecret(db, sampleRow({ environmentId: 'prod', name: 'OTHER', version: 1 }));
+
+    expect(listEnvironmentIds(db)).toEqual(['prod', 'staging']);
+    db.close();
   });
 
   it('refuses to open the database through a symlink', async () => {

@@ -1,4 +1,4 @@
-import { chmod, lstat, mkdir, writeFile } from 'node:fs/promises';
+import { chmod, lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
@@ -58,6 +58,26 @@ async function ensureJsonFile(path: string, value: object): Promise<void> {
     throw new Error(`Hush state path is not a regular file: ${path}`);
   }
   await chmod(path, FILE_MODE);
+}
+
+export interface UiState {
+  version: number;
+  activeScreen: string;
+  lastEnvironmentId?: string;
+}
+
+export async function readUiState(home: HushHome): Promise<UiState> {
+  return JSON.parse(await readFile(home.uiState, 'utf8')) as UiState;
+}
+
+export async function writeLastEnvironmentId(
+  home: HushHome,
+  environmentId: string,
+): Promise<void> {
+  const state = await readUiState(home);
+  const updated: UiState = { ...state, lastEnvironmentId: environmentId };
+  await writeFile(home.uiState, `${JSON.stringify(updated, null, 2)}\n`, { mode: FILE_MODE });
+  await chmod(home.uiState, FILE_MODE);
 }
 
 export async function initializeHushHome(userHome = homedir()): Promise<HushHome> {
