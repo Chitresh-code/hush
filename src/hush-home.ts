@@ -12,6 +12,7 @@ export interface HushHome {
   logs: string;
   cache: string;
   temporary: string;
+  database: string;
 }
 
 export function resolveHushHome(userHome = homedir()): HushHome {
@@ -27,6 +28,7 @@ export function resolveHushHome(userHome = homedir()): HushHome {
     logs: join(root, 'logs'),
     cache: join(root, 'cache'),
     temporary: join(root, 'tmp'),
+    database: join(root, 'hush.db'),
   };
 }
 

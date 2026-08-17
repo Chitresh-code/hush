@@ -25,6 +25,7 @@ describe('Hush home', () => {
     expect(paths).toEqual(resolveHushHome(userHome));
     await expect(lstat(join(process.cwd(), '.hush'))).rejects.toMatchObject({ code: 'ENOENT' });
     await expect(lstat(join(paths.root, 'hush.db'))).rejects.toMatchObject({ code: 'ENOENT' });
+    expect(paths.database).toBe(join(paths.root, 'hush.db'));
     expect(JSON.parse(await readFile(paths.config, 'utf8'))).toEqual({ version: 1 });
     expect((await stat(paths.root)).mode & 0o777).toBe(0o700);
     expect((await stat(paths.config)).mode & 0o777).toBe(0o600);
