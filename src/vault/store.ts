@@ -149,6 +149,16 @@ export function insertSecret(db: InstanceType<typeof Database>, row: NewSecretRo
   db.transaction(() => insert.run(row))();
 }
 
+export function listSecretNames(
+  db: InstanceType<typeof Database>,
+  environmentId: string,
+): string[] {
+  const rows = db
+    .prepare('SELECT DISTINCT name FROM secrets WHERE environment_id = ? ORDER BY name')
+    .all(environmentId) as { name: string }[];
+  return rows.map((row) => row.name);
+}
+
 export function latestSecret(
   db: InstanceType<typeof Database>,
   environmentId: string,
@@ -166,4 +176,47 @@ export function latestSecret(
     `,
     )
     .get(environmentId, name) as SecretRow | undefined;
+}
+
+export function secretVersions(
+  db: InstanceType<typeof Database>,
+  environmentId: string,
+  name: string,
+): SecretRow[] {
+  return db
+    .prepare(
+      `
+      SELECT id, environment_id AS environmentId, name, version,
+             envelope_version AS envelopeVersion, nonce, ciphertext, tag, created_at AS createdAt
+      FROM secrets
+      WHERE environment_id = ? AND name = ?
+      ORDER BY version DESC
+    `,
+    )
+    .all(environmentId, name) as SecretRow[];
+}
+
+export function secretVersion(
+  db: InstanceType<typeof Database>,
+  environmentId: string,
+  name: string,
+  version: number,
+): SecretRow | undefined {
+  return db
+    .prepare(
+      `
+      SELECT id, environment_id AS environmentId, name, version,
+             envelope_version AS envelopeVersion, nonce, ciphertext, tag, created_at AS createdAt
+      FROM secrets
+      WHERE environment_id = ? AND name = ? AND version = ?
+    `,
+    )
+    .get(environmentId, name, version) as SecretRow | undefined;
+}
+
+export function listEnvironmentIds(db: InstanceType<typeof Database>): string[] {
+  const rows = db
+    .prepare('SELECT DISTINCT environment_id AS environmentId FROM secrets ORDER BY environment_id')
+    .all() as { environmentId: string }[];
+  return rows.map((row) => row.environmentId);
 }

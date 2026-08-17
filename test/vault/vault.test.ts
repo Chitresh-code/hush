@@ -4,7 +4,17 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { initializeHushHome } from '../../src/hush-home.js';
 import { EnvelopeAuthenticationError } from '../../src/vault/errors.js';
-import { lockVault, openVault, readSecret, writeSecret } from '../../src/vault/vault.js';
+import {
+  listEnvironmentIds,
+  listSecretVersions,
+  lockVault,
+  openVault,
+  readAllSecrets,
+  readSecret,
+  readSecretVersion,
+  rollbackSecret,
+  writeSecret,
+} from '../../src/vault/vault.js';
 import { InMemoryKeyringEntry } from '../fixtures/keyring-double.js';
 
 const createdHomes: string[] = [];
@@ -82,6 +92,24 @@ describe('vault', () => {
     lockVault(vault);
   });
 
+  it('decrypts every secret in an environment for injection into a child process', async () => {
+    const userHome = await temporaryHome();
+    const home = await initializeHushHome(userHome);
+    const entry = new InMemoryKeyringEntry();
+    const vault = await openVault(home, entry);
+
+    writeSecret(vault, { environmentId: 'prod', name: 'API_KEY' }, 'key-value');
+    writeSecret(vault, { environmentId: 'prod', name: 'DB_PASSWORD' }, 'db-value');
+    writeSecret(vault, { environmentId: 'staging', name: 'API_KEY' }, 'staging-value');
+
+    expect(readAllSecrets(vault, 'prod')).toEqual({
+      API_KEY: 'key-value',
+      DB_PASSWORD: 'db-value',
+    });
+    expect(readAllSecrets(vault, 'empty-env')).toEqual({});
+    lockVault(vault);
+  });
+
   it('fails authentication when a ciphertext is swapped into a different row', async () => {
     const userHome = await temporaryHome();
     const home = await initializeHushHome(userHome);
@@ -124,6 +152,41 @@ describe('vault', () => {
     expect(() => readSecret(vault, { environmentId: 'env-1', name: 'API' })).toThrow(
       EnvelopeAuthenticationError,
     );
+    lockVault(vault);
+  });
+
+  it('lists distinct environment ids that have at least one secret', async () => {
+    const userHome = await temporaryHome();
+    const home = await initializeHushHome(userHome);
+    const entry = new InMemoryKeyringEntry();
+    const vault = await openVault(home, entry);
+
+    writeSecret(vault, { environmentId: 'prod', name: 'API_KEY' }, 'a');
+    writeSecret(vault, { environmentId: 'staging', name: 'API_KEY' }, 'b');
+    writeSecret(vault, { environmentId: 'prod', name: 'DB_PASSWORD' }, 'c');
+
+    expect(listEnvironmentIds(vault)).toEqual(['prod', 'staging']);
+    lockVault(vault);
+  });
+
+  it('lists secret versions newest first and rolls back without deleting history', async () => {
+    const userHome = await temporaryHome();
+    const home = await initializeHushHome(userHome);
+    const entry = new InMemoryKeyringEntry();
+    const vault = await openVault(home, entry);
+
+    writeSecret(vault, { environmentId: 'env-1', name: 'API_KEY' }, 'first');
+    writeSecret(vault, { environmentId: 'env-1', name: 'API_KEY' }, 'second');
+
+    const versions = listSecretVersions(vault, { environmentId: 'env-1', name: 'API_KEY' });
+    expect(versions.map((v) => v.version)).toEqual([2, 1]);
+    expect(readSecretVersion(vault, { environmentId: 'env-1', name: 'API_KEY' }, 1)).toBe('first');
+
+    rollbackSecret(vault, { environmentId: 'env-1', name: 'API_KEY' }, 1);
+
+    expect(readSecret(vault, { environmentId: 'env-1', name: 'API_KEY' })).toBe('first');
+    const afterRollback = listSecretVersions(vault, { environmentId: 'env-1', name: 'API_KEY' });
+    expect(afterRollback.map((v) => v.version)).toEqual([3, 2, 1]);
     lockVault(vault);
   });
 });

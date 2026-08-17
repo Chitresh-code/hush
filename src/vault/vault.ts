@@ -2,7 +2,16 @@ import Database from 'better-sqlite3';
 import type { HushHome } from '../hush-home.js';
 import { resolveDeviceKey, type KeyringEntry } from './device-key.js';
 import { decryptSecret, encryptSecret } from './envelope.js';
-import { insertSecret, latestSecret, openVaultDatabase, vaultFileExists } from './store.js';
+import {
+  insertSecret,
+  latestSecret,
+  listEnvironmentIds as listEnvironmentIdsFromStore,
+  listSecretNames,
+  openVaultDatabase,
+  secretVersion,
+  secretVersions,
+  vaultFileExists,
+} from './store.js';
 
 export interface Vault {
   db: InstanceType<typeof Database>;
@@ -56,6 +65,18 @@ export function writeSecret(vault: Vault, identity: SecretIdentity, value: strin
   write.immediate();
 }
 
+export function listSecrets(vault: Vault, environmentId: string): string[] {
+  return listSecretNames(vault.db, environmentId);
+}
+
+export function readAllSecrets(vault: Vault, environmentId: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const name of listSecretNames(vault.db, environmentId)) {
+    result[name] = readSecret(vault, { environmentId, name });
+  }
+  return result;
+}
+
 export function readSecret(vault: Vault, identity: SecretIdentity): string {
   const row = latestSecret(vault.db, identity.environmentId, identity.name);
   if (!row) {
@@ -73,4 +94,47 @@ export function readSecret(vault: Vault, identity: SecretIdentity): string {
     vault.key,
     { environmentId: row.environmentId, name: row.name, version: row.version },
   ).toString('utf8');
+}
+
+export interface SecretVersionInfo {
+  version: number;
+  createdAt: string;
+}
+
+export function listSecretVersions(vault: Vault, identity: SecretIdentity): SecretVersionInfo[] {
+  return secretVersions(vault.db, identity.environmentId, identity.name).map((row) => ({
+    version: row.version,
+    createdAt: row.createdAt,
+  }));
+}
+
+export function readSecretVersion(vault: Vault, identity: SecretIdentity, version: number): string {
+  const row = secretVersion(vault.db, identity.environmentId, identity.name, version);
+  if (!row) {
+    throw new Error(
+      `No version ${version} of "${identity.name}" in environment "${identity.environmentId}".`,
+    );
+  }
+  return decryptSecret(
+    {
+      envelopeVersion: row.envelopeVersion,
+      nonce: row.nonce,
+      ciphertext: row.ciphertext,
+      tag: row.tag,
+    },
+    vault.key,
+    { environmentId: row.environmentId, name: row.name, version: row.version },
+  ).toString('utf8');
+}
+
+// A rollback writes the old value back as a brand-new version rather than
+// deleting anything newer, so the audit trail (Phase 2's immutable-history
+// requirement) is never rewritten. Undoing an undo is just picking the
+// other version again.
+export function rollbackSecret(vault: Vault, identity: SecretIdentity, version: number): void {
+  writeSecret(vault, identity, readSecretVersion(vault, identity, version));
+}
+
+export function listEnvironmentIds(vault: Vault): string[] {
+  return listEnvironmentIdsFromStore(vault.db);
 }

@@ -8,7 +8,7 @@ import { HushApp } from '../../src/app.js';
 
 const fault = process.env.HUSH_HARNESS_FAULT;
 
-render(<HushApp />, { title: 'Hush harness', fullscreen: true, exitKey: 'q' })
+render(<HushApp />, { title: 'Hush harness', fullscreen: true })
   .then((code) => {
     process.exitCode = code;
   })
