@@ -11,7 +11,7 @@ Hush is under active development. Version 0.3.0 adds encrypted local-vault primi
 Install Hush globally from npm:
 
 ```sh
-npm install -g @anvara/hush
+npm install -g @chitresh-code/hush
 ```
 
 The current development build requires macOS and Node.js 24 or later.

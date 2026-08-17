@@ -1,5 +1,5 @@
 {
-  "name": "@anvara/hush",
+  "name": "@chitresh-code/hush",
   "version": "0.3.0",
   "description": "Local-first secret management from the terminal.",
   "type": "module",

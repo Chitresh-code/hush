@@ -16,7 +16,7 @@ These instructions apply to every coding agent working in this repository.
 ## Hush decisions
 
 - The local client is TypeScript and TermUI. It is not a Rust TUI.
-- The intended package is `@anvara/hush` with a `hush` executable.
+- The intended package is `@chitresh-code/hush` with a `hush` executable.
 - Hush owns one user-level directory resolved from the operating-system home directory: `~/.hush`. Never create `.hush` in a project or current working directory.
 - Store non-secret settings and UI state under `~/.hush`. Store device private material and session credentials in an accepted OS credential store, never in configuration files.
 - Do not use TermUI `useLocalStorage` or `useConf` because their default paths violate the Hush directory boundary.
@@ -63,6 +63,7 @@ These instructions apply to every coding agent working in this repository.
 - Never reuse or overwrite a version already published to npm.
 - Update `package.json` and `package-lock.json` together with `npm version <version> --no-git-tag-version`. Do not create a Git tag or commit unless explicitly requested.
 - Before a release, run the required checks and `npm pack`, inspect the tarball contents, and confirm that the package name and version in the pack output match the intended release.
+- Stable versions from `1.0.0` onward publish from `.github/workflows/publish-npm.yml` after they reach `main`. Never add a long-lived npm token to GitHub. Use npm trusted publishing for this workflow.
 - State the reason for the selected version bump and distinguish completed validation from checks that remain unverified.
 
 ## Git

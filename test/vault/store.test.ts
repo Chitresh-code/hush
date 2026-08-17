@@ -1,10 +1,15 @@
-import { readFileSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { InterruptedMigrationError, VaultCorruptionError } from '../../src/vault/errors.js';
-import { insertSecret, latestSecret, openVaultDatabase } from '../../src/vault/store.js';
+import {
+  insertSecret,
+  latestSecret,
+  openVaultDatabase,
+  vaultFileExists,
+} from '../../src/vault/store.js';
 
 const createdDirs: string[] = [];
 
@@ -120,6 +125,28 @@ describe('vault store', () => {
     }
     writeFileSync(path, buffer);
 
+    expect(() => openVaultDatabase(path)).toThrow(VaultCorruptionError);
+  });
+
+  it('rejects a second row with the same environment, name, and version', async () => {
+    const path = await tempDbPath();
+    const db = openVaultDatabase(path);
+    insertSecret(db, sampleRow({ version: 1 }));
+    expect(() => insertSecret(db, sampleRow({ version: 1 }))).toThrow();
+    db.close();
+  });
+
+  it('treats a dangling symlink at the database path as existing, not first run', async () => {
+    const path = await tempDbPath();
+    symlinkSync(join(path, '..', 'nonexistent-target.db'), path);
+    expect(vaultFileExists(path)).toBe(true);
+  });
+
+  it('refuses to open the database through a symlink', async () => {
+    const path = await tempDbPath();
+    const realPath = `${path}.real`;
+    openVaultDatabase(realPath).close();
+    symlinkSync(realPath, path);
     expect(() => openVaultDatabase(path)).toThrow(VaultCorruptionError);
   });
 });

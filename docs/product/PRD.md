@@ -100,7 +100,7 @@ The local alpha validates whether the core terminal workflow is valuable before 
 
 Required:
 
-- Installable `@anvara/hush` npm package with a TypeScript TermUI application.
+- Installable `@chitresh-code/hush` npm package with a TypeScript TermUI application.
 - Keyboard-first TUI for projects, environments, and secret entries.
 - Create, read, update, and delete operations with confirmation for destructive actions.
 - Secret values concealed by default and copied or revealed only through explicit actions.
@@ -214,7 +214,7 @@ The initial pricing hypothesis is USD 5 to 10 per active user per month. This is
 
 ## 11. Technical direction and constraints
 
-The local client is TypeScript and TermUI, packaged as `@anvara/hush`. It keeps local state in one user-level `~/.hush` directory and stores encrypted domain records in SQLite. A later Rust-backed remote API may synchronize ciphertext through a versioned contract.
+The local client is TypeScript and TermUI, packaged as `@chitresh-code/hush`. It keeps local state in one user-level `~/.hush` directory and stores encrypted domain records in SQLite. A later Rust-backed remote API may synchronize ciphertext through a versioned contract.
 
 The client uses TermUI packages for rendering, widgets, JSX, state, themes, routing, motion, testing, development reload, supported system statistics, and selected adapters. Hush-owned storage and protected-key boundaries remain explicit. TermUI adapters whose paths or fallback behavior violate those boundaries are not used.
 

@@ -21,7 +21,7 @@ Terminal restoration, signals, file permissions, clipboard behavior, credential 
 ## Decision
 
 - **DEC-001**: Support macOS 14 or later on Apple silicon and Intel for the local alpha.
-- **DEC-002**: Distribute the client publicly through `npm install -g @anvara/hush`. Public package access does not grant an open-source license or define the later managed-service pricing model.
+- **DEC-002**: Distribute the client publicly through `npm install -g @chitresh-code/hush`. Public package access does not grant an open-source license or define the later managed-service pricing model.
 - **DEC-003**: Test the initial terminal matrix in Terminal.app, iTerm2, and the VS Code integrated terminal. Add another terminal only after reported or observed use.
 - **DEC-004**: Keep the data format and TypeScript core platform-neutral, but report Linux and Windows as unsupported until their key-store, terminal, process, file-permission, clipboard, database, and packaging paths are implemented and tested.
 - **DEC-005**: Start child processes directly. Shell evaluation is not part of the initial execution model.

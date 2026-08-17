@@ -13,7 +13,7 @@ Build vertical slices. Do not scaffold synchronization, billing, public document
 
 The former Phase 0 product decisions are resolved:
 
-1. The local client is TypeScript with TermUI and is distributed as `@anvara/hush` with a `hush` executable.
+1. The local client is TypeScript with TermUI and is distributed as `@chitresh-code/hush` with a `hush` executable.
 2. The local alpha targets macOS 14 or later on Apple silicon and Intel. Linux and Windows remain unsupported until tested.
 3. One user-level `~/.hush` directory owns all Hush local state. Hush never creates a project-level `.hush` directory.
 4. SQLite at `~/.hush/hush.db` stores encrypted domain records and sync state. `config.json` and `ui-state.json` store non-secret configuration and UI state.
@@ -148,17 +148,25 @@ The encrypted local vault library is implemented as `src/vault/errors.ts` (typed
 
 Observed on macOS 26.3.1, Apple silicon, Node.js 24.4.0, and npm 11.13.0:
 
-- `npm run typecheck && npm test` passed: TypeScript strict-mode compilation with no errors, and 34 tests across 7 files, all passing.
+- `npm run typecheck && npm test` passed: TypeScript strict-mode compilation with no errors, and 41 tests across 7 files, all passing.
 - AES-256-GCM known-answer test vectors (`test/vault/envelope.test.ts`) were computed independently with real `node:crypto` (not mocked) and reproduced by the implementation for both encryption and decryption.
 - `better-sqlite3@13.0.3` and `@napi-rs/keyring@1.3.0` installed with prebuilt native binaries for `darwin-arm64` (confirmed present under each package's `prebuilds`/platform-package directory); no native compilation step ran on this machine.
 - Vault database files are created at file mode 0600, verified by a regression test (`test/vault/store.test.ts`) that opens a fresh database and asserts its mode.
 - The device key never leaves `Vault` through serialization: `JSON.stringify(vault)` and `Object.keys(vault)` do not expose the raw key, verified by a regression test (`test/vault/vault.test.ts`).
 
+### First review pass and fixes
+
+An adversarial review was run against the vault module. This is not the second-party human cryptographic review the spec's "Independent-review gate" section requires. It is a first pass that closed gaps before the required human review. It found three verified issues, all now fixed:
+
+- **Envelope had no associated data.** `encryptSecret`/`decryptSecret` authenticated only the ciphertext, not which row it belonged to. A vault-file writer (no key needed) could swap one secret's ciphertext into another secret's row, or delete a newer-version row to roll a rotated credential back to an old value, and GCM still reported successful authentication. Fixed by binding `(envelope_version, version, environment_id, name)` as GCM associated data (`buildAssociatedData` in `src/vault/envelope.ts`); `decryptSecret` now requires the identity and version it's decrypting for. Regression tests in `test/vault/envelope.test.ts` and `test/vault/vault.test.ts` reproduce both the ciphertext-swap and the version-rollback attack and assert `EnvelopeAuthenticationError`.
+- **`writeSecret` had a version-assignment race.** The next-version read and the insert were not in one transaction, and the schema had no uniqueness constraint, so two concurrent writers could both read the same latest version and both insert the same next version. One write could be silently overwritten with no error. Fixed by wrapping the read-modify-write in `db.transaction(...).immediate()` and adding `UNIQUE(environment_id, name, version)` to the `secrets` table as a second line of defense. True multi-process concurrency under this fix is not yet empirically exercised (see below); the `UNIQUE` constraint is regression-tested directly.
+- **The database path wasn't validated against symlinks the way every other `~/.hush` file is.** `openVaultDatabase` used `existsSync` (follows symlinks) with no `lstat` check, unlike `ensureDirectory`/`ensureJsonFile` in `src/hush-home.ts`. A symlinked `hush.db` could relocate the vault outside `~/.hush`, and a dangling symlink was reported as "no vault file," which could cause `resolveDeviceKey` to mint a fresh device key over orphaned encrypted rows. Fixed with a `lstat`-based `vaultFileExists` check (symlink counts as "exists" regardless of target) used both for the device-key first-run decision and inside `openVaultDatabase`, which now refuses to open anything that isn't a regular, non-symlink file.
+
 Not yet verified:
 
 - Real OS keychain fail-closed and prompt behavior on macOS. Tests use only `InMemoryKeyringEntry` (`test/fixtures/keyring-double.ts`), an explicitly labeled in-memory test double per `AGENTS.md`'s prohibition on exercising the real keychain in tests. No test or manual run has touched the actual macOS keychain.
 - `hush.db` file permissions in a real end-to-end run outside the test harness (only observed via the test-suite temporary-home path above).
-- Concurrent-access policy across multiple `hush` process invocations. A `busy_timeout` pragma was added as a cheap mitigation, but this remains an accepted open gap in the plan and spec, not a solved problem.
-- Independent cryptographic review of the protocol and of published and Hush-specific vectors. This has not happened yet and is the hard gate the spec's "Independent-review gate" section requires before any real secret is persisted through this code.
+- True multi-process concurrent writes against the `.immediate()` transaction fix above. The transaction and `UNIQUE` constraint are present and a direct duplicate insert is rejected, but two real OS processes racing against the same file have not been tested.
+- Independent cryptographic review of the protocol and of published and Hush-specific vectors, by a human second party. This has not happened yet and remains the hard gate the spec's "Independent-review gate" section requires before any real secret is persisted through this code. The first review pass found and closed real issues but does not satisfy this gate.
 
 Phase 2 remains blocked on independent cryptographic review until that review completes.

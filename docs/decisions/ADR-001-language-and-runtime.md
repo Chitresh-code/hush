@@ -16,14 +16,14 @@ Accepted
 
 ## Context
 
-Hush needs a polished keyboard-first terminal application, local persistence, direct child-process execution, and later synchronization with a remote service. The intended installation is `npm install -g @anvara/hush`. TermUI is a TypeScript terminal UI framework whose current packages cover rendering, widgets, JSX, state, theming, navigation, motion, testing, development reload, system data, and adapters.
+Hush needs a polished keyboard-first terminal application, local persistence, direct child-process execution, and later synchronization with a remote service. The intended installation is `npm install -g @chitresh-code/hush`. TermUI is a TypeScript terminal UI framework whose current packages cover rendering, widgets, JSX, state, theming, navigation, motion, testing, development reload, system data, and adapters.
 
 The local client language does not constrain the remote service implementation. A Rust-backed remote API remains allowed, but it is a separate runtime and trust boundary.
 
 ## Decision
 
 - **DEC-001**: Implement the CLI and TUI in TypeScript using TermUI.
-- **DEC-002**: Publish the client as the npm package `@anvara/hush` with a `hush` executable.
+- **DEC-002**: Publish the client as the npm package `@chitresh-code/hush` with a `hush` executable.
 - **DEC-003**: Use the current supported Node.js LTS line for production and development. Pin exact versions in the lockfile and CI when implementation starts.
 - **DEC-004**: Use `@termuijs/core`, `@termuijs/widgets`, `@termuijs/ui`, `@termuijs/jsx`, `@termuijs/store`, `@termuijs/tss`, `@termuijs/router`, `@termuijs/motion`, `@termuijs/data`, and `@termuijs/adapters` where required by implemented screens.
 - **DEC-005**: Use `@termuijs/testing` for rendering tests and direct `tsx` execution for interactive local development. Do not use `tsx watch` or `@termuijs/dev-server` 0.1.7 because they consume or withhold terminal input from Hush.

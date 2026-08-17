@@ -1,4 +1,4 @@
-import { chmodSync, existsSync } from 'node:fs';
+import { chmodSync, lstatSync } from 'node:fs';
 import Database from 'better-sqlite3';
 import { InterruptedMigrationError, VaultCorruptionError } from './errors.js';
 
@@ -27,8 +27,20 @@ export interface NewSecretRow {
   createdAt: string;
 }
 
+// Symlink-aware existence check: a dangling or foreign-target symlink must
+// still count as "something is here" so the caller fails closed instead of
+// treating it as first run, and it must never be silently followed to write
+// the vault outside ~/.hush.
+export function vaultFileExists(path: string): boolean {
+  return lstatSync(path, { throwIfNoEntry: false }) !== undefined;
+}
+
 export function openVaultDatabase(path: string): InstanceType<typeof Database> {
-  const fileExisted = existsSync(path);
+  const priorEntry = lstatSync(path, { throwIfNoEntry: false });
+  if (priorEntry && (!priorEntry.isFile() || priorEntry.isSymbolicLink())) {
+    throw new VaultCorruptionError(`Vault database path is not a regular file: ${path}`);
+  }
+  const fileExisted = priorEntry !== undefined;
   const db = openRawDatabase(path);
   // Set mode before enabling WAL so the -wal/-shm sidecars inherit 0600 too.
   chmodSync(path, 0o600);
@@ -117,7 +129,8 @@ function runMigration(db: InstanceType<typeof Database>): void {
         nonce BLOB NOT NULL,
         ciphertext BLOB NOT NULL,
         tag BLOB NOT NULL,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        UNIQUE (environment_id, name, version)
       );
     `);
     db.prepare('INSERT INTO schema_migrations (id, applied_at) VALUES (?, ?)').run(
@@ -148,7 +161,7 @@ export function latestSecret(
              envelope_version AS envelopeVersion, nonce, ciphertext, tag, created_at AS createdAt
       FROM secrets
       WHERE environment_id = ? AND name = ?
-      ORDER BY version DESC
+      ORDER BY version DESC, id DESC
       LIMIT 1
     `,
     )
