@@ -18,7 +18,7 @@ The former Phase 0 product decisions are resolved:
 3. One user-level `~/.hush` directory owns all Hush local state. Hush never creates a project-level `.hush` directory.
 4. SQLite at `~/.hush/hush.db` stores encrypted domain records and sync state. `config.json` and `ui-state.json` store non-secret configuration and UI state.
 5. Organization membership and direct project collaborator roles define authorization. There is no Team entity.
-6. Open-source scope, license, contribution process, and public security-reporting channel are intentionally deferred until the private product is ready for public release.
+6. The source repository and early package are public, but no open-source license has been granted. Open-source scope and contribution governance remain deferred. Security reports use GitHub private vulnerability reporting.
 
 The proposed cryptographic suite and OS credential-store binding are sufficient to begin a skeleton that stores no secrets. They are not accepted for secret persistence until the Phase 2 gate passes.
 
@@ -107,7 +107,7 @@ Add tenant operations, billing separated from authorization, operator controls, 
 
 ## 12. Public release work
 
-Choose the open-source boundary and license only after private product behavior is known. Before public distribution, add the license, public security policy, contribution process, supported-version policy, signed release process, and public documentation for implemented behavior.
+The Phase 1 shell is distributed publicly under an all-rights-reserved package declaration. Public visibility does not make the project open source. Before accepting external contributions or claiming stable availability, choose the open-source boundary and license, define contribution governance, complete the signed release process, and document supported behavior.
 
 ## 13. Change workflow
 
@@ -129,7 +129,7 @@ The first no-secret slice is implemented with a packaged executable, TermUI appl
 Observed on macOS 26.3.1, Apple silicon, Node.js 24.4.0, and npm 11.13.0:
 
 - TypeScript static analysis and compilation completed successfully.
-- Seven focused tests passed across application navigation, compact ASCII output, private local-state creation, symbolic-link rejection, option validation, and the platform boundary.
+- Eight focused tests passed across production layout, application navigation, compact ASCII output, private local-state creation, symbolic-link rejection, option validation, and the platform boundary.
 - A packed tarball installed into an isolated directory and its `hush --help` executable returned successfully.
 - npm reported no known vulnerabilities in the installed dependency graph.
 

@@ -7,7 +7,7 @@ Last updated: 2026-08-17
 
 Hush is a local-first application for managing project secrets and environment variables from a terminal user interface. It is intended to replace scattered `.env` files, copied credentials, and manual secret sharing with a device-encrypted, versioned workflow that works locally, in organizations, and in CI.
 
-Hush is being built privately first. A later decision will define which features, if any, are released under an open-source license. A managed service may remove hosting and maintenance work for a per-user subscription.
+Hush publishes its early source and npm package for evaluation. No open-source license has been granted. A later decision will define which features, if any, are released under an open-source license. A managed service may remove hosting and maintenance work for a per-user subscription.
 
 This document defines the product. It does not select cryptographic primitives, storage engines, hosting providers, authentication protocols, or TUI libraries. Those decisions require separate architecture decision records and evidence from implementation spikes or authoritative documentation.
 
@@ -224,12 +224,12 @@ Do not require a self-hosted deployment to depend on the managed service. Keep w
 
 Confirmed intent:
 
-- Build and validate Hush privately first.
+- Publish early builds for evaluation while keeping the open-source and commercial boundaries undecided.
 - Decide the open-source boundary only after implemented product behavior and security boundaries are understood.
 - A paid managed service may offer the core workflow without self-hosting work.
 - The target price range to test is USD 5 to 10 per user per month.
 
-Before a public source release, select a license, confirm dependency compatibility, define governance and private security reporting, and document any managed-service-only features. These decisions do not block private Phase 1 development.
+Public visibility does not grant an open-source license. Before accepting external contributions or declaring a stable release, select a license, confirm dependency compatibility, define governance, and document any managed-service-only features. Security reports use GitHub private vulnerability reporting.
 
 ## 13. Success measures
 
@@ -302,7 +302,7 @@ Each engineering document must state:
 
 Phase 1 has no unresolved product decision. Before Phase 2 persists user secrets, accept the cryptographic protocol after vectors and independent review, and verify fail-closed OS credential storage and SQLite behavior on supported targets.
 
-Before team synchronization, select authentication, sessions, device verification, transport, and recovery-provider details. Before public release, select the open-source boundary, license, contribution governance, and private security-reporting channel.
+Before team synchronization, select authentication, sessions, device verification, transport, and recovery-provider details. Before accepting external contributions or declaring a stable release, select the open-source boundary, license, and contribution governance.
 
 ## 18. Definition of done
 

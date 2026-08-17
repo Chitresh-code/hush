@@ -4,11 +4,11 @@ Hush is a local-first terminal application for managing project secrets and envi
 
 ## Status
 
-Hush is under active development. The repository contains an initial runnable application shell, but it does not store or manage secrets yet. The npm package is not published.
+Hush is under active development. Version 0.1.0 contains an initial runnable application shell, but it does not store or manage secrets yet.
 
 ## Installation
 
-When the first release is available, install Hush globally from npm:
+Install Hush globally from npm:
 
 ```sh
 npm install -g @anvara/hush
@@ -37,7 +37,7 @@ npm test
 npm run build
 ```
 
-Start the Node-based development watcher:
+Start the development application:
 
 ```sh
 npm run dev
@@ -45,13 +45,13 @@ npm run dev
 
 ## Contributing
 
-Hush is currently developed privately and is not accepting external contributions. A contribution guide, development workflow, and code of conduct will be added if the project opens to contributors.
+Hush is not currently accepting external contributions. A contribution guide, development workflow, and code of conduct will be added when that changes.
 
 For repository automation and coding standards, see [AGENTS.md](AGENTS.md).
 
 ## Security
 
-Do not report security vulnerabilities through a public issue. A private reporting channel and supported-version policy will be published before the first public release.
+Do not report security vulnerabilities through a public issue. Follow the private reporting instructions in [SECURITY.md](SECURITY.md).
 
 ## License
 
