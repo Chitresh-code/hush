@@ -19,12 +19,15 @@ export async function openVault(home: HushHome, entry: KeyringEntry): Promise<Va
   const vaultFileExists = existsSync(home.database);
   const key = await resolveDeviceKey(entry, vaultFileExists);
   const db = openVaultDatabase(home.database);
-  return { db, key };
+  const vault = { db } as Vault;
+  // Non-enumerable so JSON.stringify/console.log/Object.keys never dump the raw device key.
+  Object.defineProperty(vault, 'key', { value: key, enumerable: false });
+  return vault;
 }
 
 export function lockVault(vault: Vault): void {
-  vault.db.close();
   vault.key.fill(0);
+  vault.db.close();
 }
 
 export function writeSecret(vault: Vault, identity: SecretIdentity, value: string): void {

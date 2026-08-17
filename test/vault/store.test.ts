@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, statSync, writeFileSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -40,6 +40,13 @@ describe('vault store', () => {
     const row = latestSecret(db, 'env-1', 'API_KEY');
     expect(row?.version).toBe(1);
     expect(row?.ciphertext.toString()).toBe('ciphertext');
+    db.close();
+  });
+
+  it('creates the vault database file at mode 0600', async () => {
+    const path = await tempDbPath();
+    const db = openVaultDatabase(path);
+    expect(statSync(path).mode & 0o777).toBe(0o600);
     db.close();
   });
 

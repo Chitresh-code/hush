@@ -69,4 +69,16 @@ describe('vault', () => {
     expect(readSecret(vault, { environmentId: 'env-1', name: 'API_KEY' })).toBe('second');
     lockVault(vault);
   });
+
+  it('does not leak the device key through JSON.stringify', async () => {
+    const userHome = await temporaryHome();
+    const home = await initializeHushHome(userHome);
+    const entry = new InMemoryKeyringEntry();
+    const vault = await openVault(home, entry);
+
+    const serialized = JSON.stringify(vault);
+    expect(serialized).not.toContain(vault.key.toString('hex'));
+    expect(Object.keys(vault)).not.toContain('key');
+    lockVault(vault);
+  });
 });

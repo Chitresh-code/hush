@@ -15,6 +15,8 @@ export function createKeyringEntry(username: string): KeyringEntry {
   return {
     async getSecret() {
       const secret = await entry.getSecret();
+      // Vendored .d.ts says Uint8Array | undefined, but "no entry" is observed as
+      // null on macOS (matches the sync Entry.getSecret() typing) — do not remove.
       return secret ?? undefined;
     },
     async setSecret(secret) {

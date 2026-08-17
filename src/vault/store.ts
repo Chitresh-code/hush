@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { chmodSync, existsSync } from 'node:fs';
 import Database from 'better-sqlite3';
 import { InterruptedMigrationError, VaultCorruptionError } from './errors.js';
 
@@ -30,9 +30,12 @@ export interface NewSecretRow {
 export function openVaultDatabase(path: string): InstanceType<typeof Database> {
   const fileExisted = existsSync(path);
   const db = openRawDatabase(path);
+  // Set mode before enabling WAL so the -wal/-shm sidecars inherit 0600 too.
+  chmodSync(path, 0o600);
 
   try {
     db.pragma('journal_mode = WAL');
+    db.pragma('busy_timeout = 5000');
   } catch (error) {
     db.close();
     throw new VaultCorruptionError(

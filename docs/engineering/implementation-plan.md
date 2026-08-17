@@ -141,3 +141,24 @@ Not yet verified:
 - Intel macOS behavior.
 
 Phase 1 remains in progress until the applicable terminal and process checks are observed. Phase 2 remains blocked on cryptographic review and protected-storage and SQLite evidence.
+
+## 15. Phase 2 progress
+
+The encrypted local vault library is implemented as `src/vault/errors.ts` (typed error hierarchy), `src/vault/envelope.ts` (AES-256-GCM authenticated envelope via `node:crypto`), `src/vault/device-key.ts` (device key lifecycle over `@napi-rs/keyring`), `src/vault/store.ts` (`better-sqlite3` schema, migrations, atomic writes, and file permissions), and `src/vault/vault.ts` (open, lock, read, write composition), plus a `database` field added to `HushHome`. This is a library, not a wired feature: nothing in the CLI or TUI calls it yet, so no real user secret can currently be persisted through any user-facing path.
+
+Observed on macOS 26.3.1, Apple silicon, Node.js 24.4.0, and npm 11.13.0:
+
+- `npm run typecheck && npm test` passed: TypeScript strict-mode compilation with no errors, and 34 tests across 7 files, all passing.
+- AES-256-GCM known-answer test vectors (`test/vault/envelope.test.ts`) were computed independently with real `node:crypto` (not mocked) and reproduced by the implementation for both encryption and decryption.
+- `better-sqlite3@13.0.3` and `@napi-rs/keyring@1.3.0` installed with prebuilt native binaries for `darwin-arm64` (confirmed present under each package's `prebuilds`/platform-package directory); no native compilation step ran on this machine.
+- Vault database files are created at file mode 0600, verified by a regression test (`test/vault/store.test.ts`) that opens a fresh database and asserts its mode.
+- The device key never leaves `Vault` through serialization: `JSON.stringify(vault)` and `Object.keys(vault)` do not expose the raw key, verified by a regression test (`test/vault/vault.test.ts`).
+
+Not yet verified:
+
+- Real OS keychain fail-closed and prompt behavior on macOS. Tests use only `InMemoryKeyringEntry` (`test/fixtures/keyring-double.ts`), an explicitly labeled in-memory test double per `AGENTS.md`'s prohibition on exercising the real keychain in tests. No test or manual run has touched the actual macOS keychain.
+- `hush.db` file permissions in a real end-to-end run outside the test harness (only observed via the test-suite temporary-home path above).
+- Concurrent-access policy across multiple `hush` process invocations. A `busy_timeout` pragma was added as a cheap mitigation, but this remains an accepted open gap in the plan and spec, not a solved problem.
+- Independent cryptographic review of the protocol and of published and Hush-specific vectors. This has not happened yet and is the hard gate the spec's "Independent-review gate" section requires before any real secret is persisted through this code.
+
+Phase 2 remains blocked on independent cryptographic review until that review completes.
