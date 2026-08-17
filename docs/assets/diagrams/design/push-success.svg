@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 820 231" width="820" height="231">
+  <title>Push success</title>
+  <desc>Proposed Hush TUI push success wireframe.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+<text x="45" y="48" text-anchor="start" font-family="Arial, sans-serif" font-size="30" fill="#0f172a"><tspan x="45" dy="0">Push success</tspan></text>
+<rect x="45" y="85" width="730" height="106" rx="10" fill="#f8fafc" stroke="#1e293b" stroke-width="2"/>
+<text x="75" y="128" text-anchor="start" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="75" dy="0">Encrypted locally</tspan></text>
+<text x="75" y="156" text-anchor="start" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="75" dy="0">Created version 14</tspan></text>
+</svg>

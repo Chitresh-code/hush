@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 935 855" width="935" height="855">
+  <title>Create and unlock a local vault</title>
+  <desc>Create and unlock a local vault, with conceptual messages rather than implemented API operations.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+<text x="45" y="48" text-anchor="start" font-family="Arial, sans-serif" font-size="30" fill="#0f172a"><tspan x="45" dy="0">Create and unlock a local vault</tspan></text>
+<rect x="45" y="90" width="170" height="62" rx="10" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
+<text x="130" y="127" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" fill="#0f172a"><tspan x="130" dy="0">User</tspan></text>
+<line x1="130" y1="152" x2="130" y2="820" stroke="#64748b" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="270" y="90" width="170" height="62" rx="10" fill="#dcfce7" stroke="#1e293b" stroke-width="2"/>
+<text x="355" y="127" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" fill="#0f172a"><tspan x="355" dy="0">Hush client</tspan></text>
+<line x1="355" y1="152" x2="355" y2="820" stroke="#64748b" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="495" y="90" width="170" height="62" rx="10" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
+<text x="580" y="127" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" fill="#0f172a"><tspan x="580" dy="0">Protected key storage</tspan></text>
+<line x1="580" y1="152" x2="580" y2="820" stroke="#64748b" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="720" y="90" width="170" height="62" rx="10" fill="#fce7f3" stroke="#1e293b" stroke-width="2"/>
+<text x="805" y="127" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" fill="#0f172a"><tspan x="805" dy="0">Local vault</tspan></text>
+<line x1="805" y1="152" x2="805" y2="820" stroke="#64748b" stroke-width="2" stroke-dasharray="7 6"/>
+<line x1="130" y1="205" x2="355" y2="205" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="94.5" y="183" width="296" height="20" fill="#ffffff"/>
+<text x="242.5" y="198" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="242.5" dy="0">Create vault</tspan></text>
+<line x1="355" y1="263" x2="580" y2="263" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="319.5" y="241" width="296" height="20" fill="#ffffff"/>
+<text x="467.5" y="256" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="467.5" dy="0">Generate and protect device material</tspan></text>
+<line x1="580" y1="321" x2="355" y2="321" stroke="#334155" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<rect x="319.5" y="299" width="296" height="20" fill="#ffffff"/>
+<text x="467.5" y="314" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="467.5" dy="0">Protected key reference</tspan></text>
+<line x1="355" y1="379" x2="805" y2="379" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="432" y="357" width="296" height="20" fill="#ffffff"/>
+<text x="580" y="372" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="580" dy="0">Write authenticated encrypted vault</tspan></text>
+<line x1="130" y1="437" x2="355" y2="437" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="94.5" y="415" width="296" height="20" fill="#ffffff"/>
+<text x="242.5" y="430" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="242.5" dy="0">Unlock vault</tspan></text>
+<line x1="355" y1="495" x2="580" y2="495" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="319.5" y="473" width="296" height="20" fill="#ffffff"/>
+<text x="467.5" y="488" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="467.5" dy="0">Request device material</tspan></text>
+<line x1="580" y1="553" x2="355" y2="553" stroke="#334155" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<rect x="319.5" y="531" width="296" height="20" fill="#ffffff"/>
+<text x="467.5" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="467.5" dy="0">Authorized material</tspan></text>
+<line x1="355" y1="611" x2="805" y2="611" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="432" y="589" width="296" height="20" fill="#ffffff"/>
+<text x="580" y="604" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="580" dy="0">Read and authenticate envelope</tspan></text>
+<line x1="805" y1="669" x2="355" y2="669" stroke="#334155" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<rect x="432" y="647" width="296" height="20" fill="#ffffff"/>
+<text x="580" y="662" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="580" dy="0">Ciphertext</tspan></text>
+<line x1="355" y1="727" x2="130" y2="727" stroke="#334155" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<rect x="94.5" y="705" width="296" height="20" fill="#ffffff"/>
+<text x="242.5" y="720" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0f172a"><tspan x="242.5" dy="0">Show concealed entries</tspan></text>
+</svg>

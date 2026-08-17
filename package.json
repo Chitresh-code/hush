@@ -1,0 +1,37 @@
+{
+  "name": "@anvara/hush",
+  "version": "0.1.0",
+  "description": "Local-first secret management from the terminal.",
+  "type": "module",
+  "bin": {
+    "hush": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.tsx",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "private": true,
+  "dependencies": {
+    "@termuijs/core": "0.1.7",
+    "@termuijs/jsx": "0.1.7",
+    "@termuijs/router": "0.1.7",
+    "@termuijs/store": "0.1.7",
+    "@termuijs/tss": "0.1.7",
+    "@termuijs/widgets": "0.1.7"
+  },
+  "devDependencies": {
+    "@termuijs/testing": "0.1.7",
+    "@types/node": "24.13.3",
+    "tsx": "4.23.12",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  }
+}

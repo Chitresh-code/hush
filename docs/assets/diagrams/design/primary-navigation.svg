@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 1115 620" width="1115" height="620">
+  <title>Hush primary navigation</title>
+  <desc>Proposed organization, project, environment, and view hierarchy.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+<text x="40" y="48" text-anchor="start" font-family="Arial, sans-serif" font-size="30" fill="#0f172a"><tspan x="40" dy="0">Hush primary navigation</tspan></text>
+<line x1="480" y1="170" x2="480" y2="220" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="480" y1="300" x2="480" y2="350" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="360" y1="390" x2="235" y2="540" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="480" y1="430" x2="350" y2="500" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="480" y1="430" x2="560" y2="500" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="600" y1="390" x2="675" y2="540" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="600" y1="390" x2="885" y2="540" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="360" y="90" width="240" height="80" rx="12" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
+<text x="480" y="136" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="480" dy="0">Organization</tspan></text>
+<rect x="360" y="220" width="240" height="80" rx="12" fill="#dcfce7" stroke="#1e293b" stroke-width="2"/>
+<text x="480" y="266" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="480" dy="0">Project</tspan></text>
+<rect x="360" y="350" width="240" height="80" rx="12" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
+<text x="480" y="396" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="480" dy="0">Environment</tspan></text>
+<rect x="45" y="500" width="190" height="80" rx="12" fill="#fce7f3" stroke="#1e293b" stroke-width="2"/>
+<text x="140" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="140" dy="0">Secrets</tspan></text>
+<rect x="255" y="500" width="190" height="80" rx="12" fill="#e0e7ff" stroke="#1e293b" stroke-width="2"/>
+<text x="350" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="350" dy="0">Changes</tspan></text>
+<rect x="465" y="500" width="190" height="80" rx="12" fill="#cffafe" stroke="#1e293b" stroke-width="2"/>
+<text x="560" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="560" dy="0">History</tspan></text>
+<rect x="675" y="500" width="190" height="80" rx="12" fill="#dbeafe" stroke="#1e293b" stroke-width="2"/>
+<text x="770" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="770" dy="0">Access</tspan></text>
+<rect x="885" y="500" width="190" height="80" rx="12" fill="#dcfce7" stroke="#1e293b" stroke-width="2"/>
+<text x="980" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="980" dy="0">Devices</tspan></text>
+</svg>

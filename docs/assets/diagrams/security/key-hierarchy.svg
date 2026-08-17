@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 900 735" width="900" height="735">
+  <title>Hush key hierarchy</title>
+  <desc>Authorization and wrapping relationships, not direct key derivation.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>
+  <rect width="100%" height="100%" fill="#ffffff"/>
+<text x="40" y="48" text-anchor="start" font-family="Arial, sans-serif" font-size="30" fill="#0f172a"><tspan x="40" dy="0">Hush key hierarchy</tspan></text>
+<line x1="490" y1="175" x2="490" y2="225" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="490" y1="305" x2="490" y2="355" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="490" y1="435" x2="490" y2="485" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<line x1="490" y1="565" x2="490" y2="615" stroke="#334155" stroke-width="2"  marker-end="url(#arrow)"/>
+<rect x="365" y="95" width="250" height="80" rx="12" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
+<text x="490" y="141" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="490" dy="0">User recovery authority</tspan></text>
+<rect x="365" y="225" width="250" height="80" rx="12" fill="#dcfce7" stroke="#1e293b" stroke-width="2"/>
+<text x="490" y="271" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="490" dy="0">Authorized device keys</tspan></text>
+<rect x="365" y="355" width="250" height="80" rx="12" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
+<text x="490" y="401" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="490" dy="0">Environment key envelope</tspan></text>
+<rect x="365" y="485" width="250" height="80" rx="12" fill="#fce7f3" stroke="#1e293b" stroke-width="2"/>
+<text x="490" y="531" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="490" dy="0">Wrapped data key</tspan></text>
+<rect x="365" y="615" width="250" height="80" rx="12" fill="#e0e7ff" stroke="#1e293b" stroke-width="2"/>
+<text x="490" y="661" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0f172a"><tspan x="490" dy="0">Encrypted immutable payload</tspan></text>
+</svg>
