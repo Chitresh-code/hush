@@ -118,7 +118,7 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          packages=(package/*.tgz)
+          packages=("$PWD"/package/*.tgz)
 
           if (( ${#packages[@]} != 1 )); then
             echo "Expected one package archive, found ${#packages[@]}." >&2
@@ -157,7 +157,7 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          packages=(package/*.tgz)
+          packages=("$PWD"/package/*.tgz)
 
           if (( ${#packages[@]} != 1 )); then
             echo "Expected one package archive, found ${#packages[@]}." >&2
