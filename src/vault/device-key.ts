@@ -11,7 +11,16 @@ export interface KeyringEntry {
 }
 
 export function createKeyringEntry(username: string): KeyringEntry {
-  return new AsyncEntry(KEYRING_SERVICE, username);
+  const entry = new AsyncEntry(KEYRING_SERVICE, username);
+  return {
+    async getSecret() {
+      const secret = await entry.getSecret();
+      return secret ?? undefined;
+    },
+    async setSecret(secret) {
+      await entry.setSecret(secret);
+    },
+  };
 }
 
 export async function resolveDeviceKey(
