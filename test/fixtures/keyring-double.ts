@@ -12,6 +12,6 @@ export class InMemoryKeyringEntry implements KeyringEntry {
   }
 
   async setSecret(secret: Uint8Array): Promise<void> {
-    this.secret = secret;
+    this.secret = Uint8Array.from(secret);
   }
 }
