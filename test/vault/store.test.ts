@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -95,5 +95,24 @@ describe('vault store', () => {
     expect(() => failingWrite()).toThrow('simulated failure mid-transaction');
     expect(latestSecret(db, 'env-1', 'API_KEY')?.version).toBe(1);
     db.close();
+  });
+
+  it('rejects a database with failed integrity check', async () => {
+    const path = await tempDbPath();
+
+    // Create a valid database with data
+    const db = openVaultDatabase(path);
+    insertSecret(db, sampleRow());
+    db.close();
+
+    // Corrupt the database file by flipping bits in a data section
+    const buffer = readFileSync(path);
+    // Corrupt bytes beyond the header (after 4096 bytes) to affect data pages
+    if (buffer.length > 4096) {
+      buffer[4096] ^= 0xFF;
+    }
+    writeFileSync(path, buffer);
+
+    expect(() => openVaultDatabase(path)).toThrow(VaultCorruptionError);
   });
 });

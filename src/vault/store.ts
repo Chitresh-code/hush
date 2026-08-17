@@ -48,6 +48,7 @@ export function openVaultDatabase(path: string): InstanceType<typeof Database> {
         throw new VaultCorruptionError(`Vault database failed integrity check: ${path}`);
       }
     } catch (error) {
+      if (error instanceof VaultCorruptionError) throw error;
       db.close();
       throw new VaultCorruptionError(
         `Vault database is unreadable: ${path} (${(error as Error).message})`,
